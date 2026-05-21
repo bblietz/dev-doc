@@ -18,9 +18,12 @@ import { visit } from 'unist-util-visit';
 
 export const id = 'links';
 
-// `<Name>_<digits>.html` pattern, anywhere in the URL path. Trailing
-// `#anchor` is tolerated by the parser; we test against just the path.
-const CONFLUENCE_EXPORT_RE = /[^\s/]+_\d+\.html(\?[^#\s]*)?(#\S*)?$/i;
+// `<Name>_<digits>.html` pattern, anywhere in the URL path. Confluence
+// page IDs are 6-8 digits (e.g. 1607203, 1611697), so we require at
+// least 6 digits to avoid false-positives on `report_2024.html`-style
+// names. Query + hash are stripped by isConfluenceLink before this is
+// tested, so we anchor at $.
+const CONFLUENCE_EXPORT_RE = /[^\s/]+_\d{6,}\.html$/i;
 const CONFLUENCE_ARCHIVE_HOST_RE = /^https?:\/\/sdkdocs-archive\.staging\.web\.roku\.com\//i;
 
 function isConfluenceLink(url) {
